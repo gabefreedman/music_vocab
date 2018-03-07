@@ -10,7 +10,7 @@ from bs4 import BeautifulSoup
 import pandas as pd
 import time
 
-
+#def get_unique_discography():
 BASE_URL = 'http://www.metrolyrics.com/radiohead-albums-list.html'
 page = requests.get(BASE_URL)
 soup = BeautifulSoup(page.text, 'html.parser')
@@ -59,4 +59,3 @@ while page_num <= int(num_pages):
     heading_tags = []
     albums = []
 
-df.to_csv('test.csv', index=False)
