@@ -58,3 +58,30 @@ def get_unique_discography():
         song_list = []
         heading_tags = []
         albums = []
+
+    return df
+
+def clean_discography(df):
+    
+    #Remove rows with no Track
+    df = df.dropna()
+
+    #Make all Tracks lowercase
+    df['Track'] = df['Track'].str.lower()
+
+    #Replace all non-alphanumeric (minus space and ') with space
+    df['Track'] = df['Track'].apply(lambda x: re.sub(r'[^a-zA-Z0-9\s\']',' ', str(x)))
+
+    #Replace multiple spaces with one space
+    df['Track'] = df['Track'].apply(lambda x: re.sub(' +', '-', str(x)))
+
+    #Remove trailing dashes
+    df['Track'] = df['Track'].apply(lambda x: x.rstrip('-'))
+
+    #Removes all remixes and live edition songs
+    df = df[~(df['Track'].str.endswith(('-remix', '-rework', '-rmx', '-live', '-version')))]
+
+    #Remove duplicate tracks
+    df = df.drop_duplicates(subset=['Track'], keep='last')
+    
+    return df
