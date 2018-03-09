@@ -8,7 +8,11 @@ Created on Mon Mar  5 17:31:34 2018
 import lyrics
 import vocab-scrape
 
-artist = 'Radiohead'.lower()
+def main():
+    artist = 'Radiohead'.lower()
 
-disc = lyrics.get_unique_discography(artist)
-disc = lyrics.clean_discography(disc)
+    disc = lyrics.get_unique_discography(artist)
+    disc = lyrics.clean_discography(disc)
+
+if __name__ == '__main__':
+  main()
