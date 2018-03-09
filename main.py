@@ -15,4 +15,4 @@ def main():
     disc = lyrics.clean_discography(disc)
 
 if __name__ == '__main__':
-  main()
+    main()
