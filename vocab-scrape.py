@@ -7,7 +7,6 @@ Created on Wed Feb 28 21:40:41 2018
 
 import requests
 from bs4 import BeautifulSoup
-import csv
 
 
 def get_vocab():
@@ -44,26 +43,4 @@ def clean_vocab(words):
             cleaned_words.append(word.partition(', ')[0])
             cleaned_words.append(word.partition(', ')[2])
     return cleaned_words
-
-def get_lyrics():
-    
-    BASE_URL = 'http://www.metrolyrics.com/airbag-lyrics-radiohead.html'
-    
-    page = requests.get(BASE_URL)
-    soup = BeautifulSoup(page.text, 'html.parser')
-    
-    raw_lyric = []
-    for tag in soup.find_all('p', class_='verse'):
-        raw_lyric.append(tag.text)
-    
-    raw_lyric = ' '.join(raw_lyric).split()
-    return raw_lyric
-
-#def discography():
-
-BASE_URL = 'https://www.azlyrics.com/r/radiohead.html'
-
-page = requests.get(BASE_URL)
-print(page.status_code)
-soup = BeautifulSoup(page.text, 'html.parser')
 

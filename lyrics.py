@@ -9,6 +9,7 @@ import requests
 from bs4 import BeautifulSoup
 import pandas as pd
 import time
+import re
 
 def get_unique_discography():
     BASE_URL = 'http://www.metrolyrics.com/radiohead-albums-list.html'
@@ -16,8 +17,7 @@ def get_unique_discography():
     soup = BeautifulSoup(page.text, 'html.parser')
     
     num_pages = soup.find('span', class_='pages').get_text().replace('\n', 
-                         '').replace('\t', '')[-1]
-    
+                         '').replace('\t', '')[-1]    
     
     song_list = []
     heading_tags = []
@@ -84,4 +84,41 @@ def clean_discography(df):
     #Remove duplicate tracks
     df = df.drop_duplicates(subset=['Track'], keep='last')
     
+    df = df.dropna()
+    
     return df
+
+
+def get_lyrics():
+    
+    BASE_URL = 'http://www.metrolyrics.com/airbag-lyrics-radiohead.html'
+    
+    page = requests.get(BASE_URL)
+    soup = BeautifulSoup(page.text, 'html.parser')
+    
+    raw_lyric = []
+    for tag in soup.find_all('p', class_='verse'):
+        raw_lyric.append(tag.text)
+    
+    raw_lyric = ' '.join(raw_lyric).split()
+    return raw_lyric
+
+def get_status_code(track):
+    
+    BASE_URL = r'http://www.metrolyrics.com/' + track + '-lyrics-radiohead.html'
+    
+    page = requests.get(BASE_URL)
+    if page.history:
+        return [resp.status_code for resp in page.history]
+    else:
+        return page.status_code
+
+    
+
+df = get_unique_discography()
+df = clean_discography(df)
+df['Status Code'] = 0
+for i, row in df.iterrows():
+    row['Status Code'] = get_status_code(row['Track'])
+print('done')
+df.to_csv(r'C:\Users\Gabe Freedman\Desktop\Projects\music_vocab\test.csv', index=False)
