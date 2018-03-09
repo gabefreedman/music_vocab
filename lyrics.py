@@ -89,9 +89,9 @@ def clean_discography(df):
     return df
 
 
-def get_lyrics():
+def get_lyrics(track):
     
-    BASE_URL = 'http://www.metrolyrics.com/airbag-lyrics-radiohead.html'
+    BASE_URL = 'http://www.metrolyrics.com/' + track + '-lyrics-radiohead.html'
     
     page = requests.get(BASE_URL)
     soup = BeautifulSoup(page.text, 'html.parser')
@@ -117,8 +117,6 @@ def get_status_code(track):
 
 df = get_unique_discography()
 df = clean_discography(df)
-df['Status Code'] = 0
-for i, row in df.iterrows():
-    row['Status Code'] = get_status_code(row['Track'])
+df['Status Code'] = [get_status_code(row.Track) for row in df.itertuples()]
 print('done')
 df.to_csv(r'C:\Users\Gabe Freedman\Desktop\Projects\music_vocab\test.csv', index=False)
