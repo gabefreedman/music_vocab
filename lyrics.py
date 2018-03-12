@@ -50,7 +50,7 @@ def get_unique_discography():
                                 ignore_index=True)
         
         page_num += 1
-        time.sleep(2)
+        time.sleep(1)
         
         BASE_URL = 'http://www.metrolyrics.com/radiohead-albums-list-' + str(page_num) + '.html'
         page = requests.get(BASE_URL)
@@ -63,25 +63,20 @@ def get_unique_discography():
 
 def clean_discography(df):
     
-    #Remove rows with no Track
     df = df.dropna()
 
-    #Make all Tracks lowercase
     df['Track'] = df['Track'].str.lower()
 
-    #Replace all non-alphanumeric (minus space and ') with space
     df['Track'] = df['Track'].apply(lambda x: re.sub(r'[^a-zA-Z0-9\s\']',' ', str(x)))
 
-    #Replace multiple spaces with one space
     df['Track'] = df['Track'].apply(lambda x: re.sub(' +', '-', str(x)))
+    
+    df['Track'] = df['Track'].str.replace("\'", '')
 
-    #Remove trailing dashes
     df['Track'] = df['Track'].apply(lambda x: x.rstrip('-'))
 
-    #Removes all remixes and live edition songs
     df = df[~(df['Track'].str.endswith(('-remix', '-rework', '-rmx', '-live', '-version')))]
 
-    #Remove duplicate tracks
     df = df.drop_duplicates(subset=['Track'], keep='last')
     
     df = df.dropna()
@@ -94,14 +89,22 @@ def get_lyrics(track):
     BASE_URL = 'http://www.metrolyrics.com/' + track + '-lyrics-radiohead.html'
     
     page = requests.get(BASE_URL)
-    soup = BeautifulSoup(page.text, 'html.parser')
+    time.sleep(1)
+    if page.history:
+        return [resp.status_code for resp in page.history]
+    else:
+        soup = BeautifulSoup(page.text, 'html.parser')
     
-    raw_lyric = []
-    for tag in soup.find_all('p', class_='verse'):
-        raw_lyric.append(tag.text)
+        raw_lyric = []
+        for tag in soup.find_all('p', class_='verse'):
+            raw_lyric.append(tag.text)
+        
+        raw_lyric = ' '.join(raw_lyric).split()
+        return raw_lyric
     
-    raw_lyric = ' '.join(raw_lyric).split()
-    return raw_lyric
+def clean_lyrics(df):
+    
+    df = df[df['Lyrics'].map(len) > 1]
 
 def get_status_code(track):
     
@@ -115,8 +118,8 @@ def get_status_code(track):
 
     
 
-df = get_unique_discography()
-df = clean_discography(df)
-df['Status Code'] = [get_status_code(row.Track) for row in df.itertuples()]
-print('done')
-df.to_csv(r'C:\Users\Gabe Freedman\Desktop\Projects\music_vocab\test.csv', index=False)
+#df = get_unique_discography()
+#df = clean_discography(df)
+#df['Lyrics'] = [get_lyrics(row.Track) for row in df.itertuples()]
+#print('done')
+#df.to_csv(r'C:\Users\Gabe Freedman\Desktop\Projects\music_vocab\test.csv', index=False)
