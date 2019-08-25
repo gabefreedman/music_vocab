@@ -8,6 +8,7 @@ Created on Mon Mar  5 17:31:34 2018
 import lyrics
 import vocab_scrape
 
+
 def main():
     artist = 'Radiohead'.lower()
 

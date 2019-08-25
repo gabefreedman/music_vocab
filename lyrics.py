@@ -11,6 +11,7 @@ import pandas as pd
 import time
 import re
 
+
 def get_unique_discography():
     BASE_URL = 'http://www.metrolyrics.com/radiohead-albums-list.html'
     page = requests.get(BASE_URL)
